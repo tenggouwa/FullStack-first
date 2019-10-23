@@ -1,0 +1,17 @@
+.header{
+  display: flex;
+  height: 60px;
+  width: 100%;
+  line-height: 60px;
+  padding: 0 30px;
+  background: #3fb2ff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+  font-size: 16px;
+  .header-left{
+    flex: 1;
+  }
+  .header-right{
+    text-align: right;
+    flex: 1;
+  }
+}
