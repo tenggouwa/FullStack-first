@@ -1,155 +1,80 @@
-# react-web
+## Koa2 + mongodb 简易后端脚手架
 
-> 前后端整站尝试
+> Author: Tenggouwa
 
-## 项目架构
 
-> master为前端分支
-> back为后端分支
+> Date: 2019.06.26
 
-## 项目启动
+### 项目简介
 
-后端分支 ==> `yarn` ===> `nodemon app.js`
+为了方便业务开发，所搭建的 **koa + mongodb** 脚手架，使用较为主流的内容搭建。
 
-前端分支 ==> `yarn` ===> `yarn dev`
 
-## 项目结构 ##
+### 环境搭建
 
-```
-.
-├── mock  ----------------------------- 本地mock配置文件
-├── abc.json  ------------------------- 项目构建配置文件
-├── package.json  --------------------- 项目配置
-├── README.md  ------------------------ 说明文件
-├── build  ---------------------------- 构建代码文件
-├── config  --------------------------- 构建配置文件
-├── index.html  ----------------------- 入口页面
-└── src  ------------------------------ 源码目录
-    ├── assets  ----------------------- 项目资源文件目录（图片、字体等）
-    ├── components  ------------------- 业务模块集合目录（组件）
-    ├── fetch  ------------------------ ajax请求管理文件
-    ├──   └── api  -------------------- 请求配置 (axios ajax配置管理文件)
-    ├── pages  ------------------------ 页面集合目录
-    ├── reducers  --------------------- redux文件目录
-    ├── App.js  ----------------------- react公共配置文件
-    └── main.js  ---------------------- 项目级入口配置文件
-```
+ + node
+   + node官方下载地址: https://nodejs.org/zh-cn/download/
+ + mongodb
+   + mac下mongodb安装教程: https://www.jianshu.com/p/7241f7c83f4a
+   + windows下mongodb安装教程: https://blog.csdn.net/zhongkaigood/article/details/81475904
+   + robomongo(mongodb数据库可视化--免费): https://robomongo.org/download
+ + koa-bodyparser
+   + 处理post请求返回的数据
+   + npm: https://www.npmjs.com/package/koa-bodyparser
+ + koa2-cors
+   + 处理跨域问题
+   + npm: https://www.npmjs.com/package/koa2-cors
+ + koa-static
+   + 处理静态文件所需
+   + npm: https://www.npmjs.com/package/koa-static
+ + koa-router
+   + 处理koa路由
+   + npm: https://www.npmjs.com/package/koa-router
+ + 本地安装nodemon
+   + nodemon会监听你的代码，当有变动的时候自动帮你重启项目
+   + npm: https://www.npmjs.com/package/nodemon
+ + yarn(选装)---代替npm/cnpm
+ + homebrew(选装)---包版本管理工具
 
-## 环境准备
+### 项目运行 
 
-``` bash
-# 安装依赖
-npm install || yarn install
++ `yarn`或者`cnpm i`或者`npm i`
++ `nodemon app`或者`node app`
++ 本地访问localhost:3000/getBlock或根据router.js使用postman测试
 
-# 启动本地调试 localhost:8080
-npm run dev || yarn dev
+### 项目结构
 
-# 本地打包压缩
-npm run build || yarn build
 
-# 生成page文件
-npm run init page `name` # 配置发生改变暂不可用
+目录 | 说明
+ :-: | :-:
+/controller|控制层相关文件(提供接口)
+/middleware|中间件-可以使用第三方以及自己封装的
+/models|数据库模型(传统意义上的表结构)
+/views|视图层(可以使用模板引擎展现视图)
+/app.js|主要的入口文件(引入一些第三方内容)
+/package.json|项目的包管理
+/router.js|路由地址，输出接口地址
 
-# 生成component文件
-npm run init component `name` # 配置发生改变暂不可用
-```
-## 反代理配置
 
-本地代码想要访问测试环境接口可以通过以下配置
-`/config/index.js` 
-``` bash
-dev: {
-  proxyTable: {
-    '/api': {
-      target: 'http://jsonplaceholder.typicode.com/',
-      changeOrigin: true,
-      pathRewrite: {'^/api': ''}
-    }
-  }
-}
-```
+### mongoDB操作
 
-## 本地ajax mock 配置
++ 保存数据
+  + `save()`
++ 查取数据
+  + 查询 `find()`   `finOne()`
+  + `where()`
++ 更改数据
+  + `where().update()`
++ 删除数据
+  + `where().remove()`
++ 排序
+  + `find().sort()`
++ 分页
+  + `find().sort().skip(页码).limit(单页数据)`
 
-可以直接返回一段json例如
-`/mock/users/user.json` 
 
-``` bash
-{
-  "code|1": [0, 0, 0, 0, 1],
-  "data": {
-    "list|10": [
-      {
-        "id|+1": 1,
-        "name": "@name",
-        "age|20-30": 1,
-        "email": "@email",
-        "date": "@date"
-      }
-    ]
-  }
-}
-```
 
-也可以写业务代码自定义返回参数
-`/mock/users/user.js` 
 
-``` bash
-module.exports = function (req) {
-  const uid = req.query.uid;
 
-  if (!uid) {
-    return {
-      code: -1,
-      msg: 'no uid',
-    }
-  }
 
-  return {
-    code: 0,
-    data: {
-      "uid": +uid,
-      "name": "@name",
-      "age|20-30": 1,
-      "email": "@email",
-      "date": "@date",
-    },
-  };
-};
-```
-
-引入以上配置在`config/mock.js`文件中添加配置
-``` bash
-module.exports = {
-    'GET::/api/1.json': 'mock::/users/list.json',
-    'GET::/test/2.json': 'mock::/users/user.js',
-}
-```
-注：数据mock优先级低于反代理配置同父级，目录会被覆盖
-
-## 引入新的页面
-
-页面统一在`/src/pages`目录中添加<br/>
-同事当项目无限大的时候通过router一次性加载全部的页面需要用户非常大耐心<br />
-所有我们在代码中统一使用router按需加载配置，在`routes.js`添加page使用如下方式
-``` bash
-{
-    path: '/',
-    component: loadableHandler(() => import('./pages/home'))
-}
-```
-命令生成page，routes会自动加入该配置
-
-## 自定义模块组件
-
-页面和组件分开目录编写有益于代码维护，自定义组件或业务公共模块统一在`/src/components/`目录开发结构可与pages相同
-
-## 开发所需技术
-javascript的语法
-* react           主要架构
-* redux           状态管理工具
-* react-i18next   国际化插件
-* react-router    react路由插件
-* axios           ajax异步请求插件   
-* css-modules     css模块工具适合react样式开发
-* sass            css预处理结合css-modules
+未完待续
